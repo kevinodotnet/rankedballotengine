@@ -1,0 +1,5 @@
+{
+  "require": {
+    "jmathai/epiphany": "dev-master"
+  }
+}

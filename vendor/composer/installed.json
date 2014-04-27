@@ -1,0 +1,30 @@
+[
+    {
+        "name": "jmathai/epiphany",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/kolarski/epiphany.git",
+            "reference": "ce5fbcf28dded0358cbce1b43fa68161f25235f7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/kolarski/epiphany/zipball/ce5fbcf28dded0358cbce1b43fa68161f25235f7",
+            "reference": "ce5fbcf28dded0358cbce1b43fa68161f25235f7",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2.0"
+        },
+        "time": "2014-01-21 07:58:22",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "src"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/"
+    }
+]
