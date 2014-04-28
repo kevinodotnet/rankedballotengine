@@ -6,14 +6,20 @@ session_start();
 date_default_timezone_set("Canada/Eastern");
 
 require '../vendor/autoload.php';
+require '../lib/config.php';
 
-Epi::init('route');
 Epi::init('api');
 Epi::init('route','session-php');
+Epi::init('database');
+Epi::setSetting('exceptions', true);
 
 getRoute()->get('/', 'home');
 getRoute()->get('.*', 'error404');
 getRoute()->run();
+
+function rbeinit() {
+  EpiDatabase::employ(RBEConfig::DB_TYPE, RBEConfig::DB_NAME, RBEConfig::DB_HOST, RBEConfig::DB_USER, RBEConfig::DB_PASS);
+}
 
 function home() {
   top();
@@ -30,6 +36,7 @@ function error404() {
 }
 
 function top($title = '') {
+  rbeinit();
   ?>
   <html>
   <head>
