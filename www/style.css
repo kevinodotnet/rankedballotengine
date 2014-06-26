@@ -1,3 +1,11 @@
 #content {
   padding: 5px;
 }
+
+.jumbotron {
+  font-size: 200%;
+}
+
+.center {
+  text-align: center;
+}

@@ -7,6 +7,8 @@ date_default_timezone_set("Canada/Eastern");
 
 require '../vendor/autoload.php';
 require '../lib/config.php';
+require 'controller/VoteController.php';
+require 'controller/ElectionController.php';
 
 Epi::init('api');
 Epi::init('route','session-php');
@@ -14,6 +16,9 @@ Epi::init('database');
 Epi::setSetting('exceptions', true);
 
 getRoute()->get('/', 'home');
+getRoute()->get('/vote/', array('VoteController','vote'));
+getRoute()->get('/vote/start', array('VoteController','start'));
+getRoute()->get('/vote/save/(\d+)', array('VoteController','save'));
 getRoute()->get('.*', 'error404');
 getRoute()->run();
 
@@ -22,9 +27,22 @@ function rbeinit() {
 }
 
 function home() {
-  top();
+  top('Ranked Ballot Engine');
   ?>
-  Welcome home!
+  <div class="row">
+  <div class="center col-sm-4">
+  <h2>Vote Now!</h2>
+  <a href="<?php print RBEConfig::WWW; ?>/vote/">Vote now!</a>
+  </div>
+  <div class="center col-sm-4">
+  <h2>Election Results</h2>
+  See the results.
+  </div>
+  <div class="center col-sm-4">
+  <h2>Learn More</h2>
+  <a href="http://ottawa123.ca">Learn more at ottawa123.ca</a>
+  </div>
+  </div>
   <?php
   bottom();
 }
@@ -48,7 +66,7 @@ function top($title = '') {
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   </head>
   <body>
-  <div class="jumbotron"><?php print $title; ?></div>
+  <div class="center jumbotron"><?php print $title; ?></div>
   <div id="content">
   <?php
 }
@@ -59,5 +77,11 @@ function bottom() {
   </body>
   </html>
   <?php
+}
+
+function pr($o) {
+  print "<pre>";
+  print print_r($o);
+  print "</pre>";
 }
 

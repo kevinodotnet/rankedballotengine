@@ -8,6 +8,8 @@ class RBEConfig {
   const DB_USER = "rbe";
   const DB_PASS = "foo123";
 
+  const WWW = 'http://rankedballotengine.ca';
+
 }
 
 ?>
