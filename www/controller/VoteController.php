@@ -5,6 +5,13 @@ class VoteController {
   public static function ballot ($electorid) {
 
     top("Viewing vote #$electorid");
+		?>
+		<p>
+		<center>
+    <a href="<?php print RBEConfig::WWW; ?>/vote/start" class="btn btn-primary">Vote again!</a>
+		</center>
+		</p>
+		<?php
     $votes = getDatabase()->all("
       select
         v.electionid,
@@ -27,12 +34,6 @@ class VoteController {
     foreach ($votes as $v) {
       $electionid = $v['electionid']; 
       break;
-      $rank = VoteController::toOrdinal($v['rank']);
-      ?>
-      Rank <?php print $rank; ?>
-      Name: <?php print $v['name']; ?>
-      <br/>
-      <?php
     }
 
     ?>
