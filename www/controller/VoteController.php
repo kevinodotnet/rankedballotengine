@@ -44,12 +44,22 @@ class VoteController {
     }
 
     header("Location: ".RBEConfig::WWW."/vote/");
-
   }
 
   public static function start() {
     getSession()->set('votes',null);
     header("Location: ".RBEConfig::WWW."/vote/");
+  }
+
+  public static function done() {
+
+    $votes = @getSession()->get('votes');
+    top('You have voted!');
+    pr($votes);
+    ?>
+    <a href="start" class="btn btn-danger">Cancel and start over</a>
+    <?php
+    bottom();
   }
 
   public static function vote() {
@@ -69,40 +79,81 @@ class VoteController {
     }
 
     if (count($candidates_todo) == 0) {
-      top("You're done!");
+      top("You've filled your ballot. Now click Save!");
     } else {
       top("Who is your " . VoteController::toOrdinal($step) . " pick?");
     }
 
     ?>
     <div class="row">
+    <div class="col-sm-9">
     <?php
 
+    $backgrounds = array();
+    $backgrounds[] = 'rgba(00,155,160,0.5)';
+    $backgrounds[] = 'rgba(245,133,34,0.5)';
+    $backgrounds[] = 'rgba(217,18,133,0.5)';
 
+
+    $count = -1;
     foreach ($candidates_todo as $c) {
+      $count++;
       $voteUrl = RBEConfig::WWW . "/vote/save/" . $c['id'];
       $rank = array_search($c['id'],$votes);
+      $bg = $backgrounds[ $count % count($backgrounds)  ];
       ?>
-      <div class="center col-sm-4 col-xs-12">
-      <h3><a href="<?php print $voteUrl; ?>"><?php print $c['name']; ?></a></h3>
-      (<b><?php print $c['sex']; ?> <?php print $c['age']; ?></b>)<br/>
-      <?php print $c['desc']; ?><br/>
+      <div class="row" style="background: <?php print $bg; ?>;">
+      <div class="center col-sm-3 col-xs-12" style="padding: 20px; ">
+      <a href="<?php print $voteUrl; ?>"><center><img src="<?php print $c['img']; ?>" class="center img-responsive" style=" align: left;"/></center></a>
       </div>
+      <div class="center col-sm-9 col-xs-12" style="font-size: 150%; padding-top: 20px;">
+      <p><b>Name:</b> <?php print $c['name']; ?>
+      <b>Sex:</b> <?php print $c['sex']; ?>
+      <b>Age:</b> <?php print $c['age']; ?>
+      </p>
+      <p>
+      <?php print $c['description']; ?>
+      </p>
+      <p>
+      <span style="font-size: 150%;"><a href="<?php print $voteUrl; ?>">Pick <b><?php print $c['name']; ?></b> <?php print VoteController::toOrdinal($step); ?>!</a></span>
+      </p>
+      </div>
+      </div><!-- /candidate -->
       <?php
     }
 
     ?>
     </div>
+    <div class="col-sm-3">
+
+    <?php
+    $showSaveBallot = 0;
+    if (count($candidates_voted) > 0) {
+      $showSaveBallot = 1;
+    }
+    ?>
+
+	    <div class="row" style="margin-top: 20px;">
+	    <div class="col-sm-12 center">
+	    <?php if ($showSaveBallot) {
+	      ?>
+	      <a href="done" class="btn btn-primary">Save Ballot As-Is</a>
+	      <?php
+	    }
+	    ?>
+	    <a href="start" class="btn btn-danger">Cancel and start over</a>
+	    </div>
+	    </div>
+
 
     <?php 
     $showSaveBallot = 0;
-    if (count($candidates_voted) > 0) { 
+    if (count($candidates_voted) > 0) {
       $showSaveBallot = 1;
       ?>
 
 	    <div style="margin-top: 20px;">
-	    <h2 class="center">Your ballot ranking:</h2>
-	    <div class="center">
+	    <h2 class="center">Your ballot:</h2>
 	    <?php
 	    // show existing ballot ranking
 	    foreach ($votes as $rank => $id) {
@@ -112,32 +163,32 @@ class VoteController {
 	        }
 	      }
 	      $ordinal = VoteController::toOrdinal($rank);
-	      ?>
-	      <?php
-	      print "$ordinal: ".$c['name']."<br/>";
+        ?>
+        <div class="row">
+        <div class="col-xs-6">
+        <?php
+	      print "<b>$ordinal:</b> ".$c['name']."<br/>";
+        ?>
+        </div>
+        <div class="col-xs-6"><img src="<?php print $c['img']; ?>" class="img-responsive"/></div>
+        </div>
+        <?php
 	    }
 	    ?>
-	    </div>
 	    </div>
       <?php 
     } 
     ?>
 
-    <div class="row" style="margin-top: 20px;">
-    <div class="col-sm-12 center">
-    <?php if ($showSaveBallot) {
-      ?>
-      <a href="done" class="btn btn-primary">Save Ballot As-Is</a>
-      <?php
-    }
-    ?>
-    <a href="start" class="btn btn-danger">Cancel and start over</a>
     </div>
     </div>
+
     <?php
 
     bottom();
   }
+
+
 
 }
 

@@ -3,6 +3,10 @@
 class ElectionController {
  
   public static function getCandidates() {
+
+    $rows = getDatabase()->all(" select * from candidate order by rand() ");
+    return $rows;
+
     $candidates = array();
 
     $candidates[] = array(

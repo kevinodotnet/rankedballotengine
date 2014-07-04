@@ -15,9 +15,13 @@ Epi::init('route','session-php');
 Epi::init('database');
 Epi::setSetting('exceptions', true);
 
+EpiDatabase::employ(RBEConfig::DB_TYPE, RBEConfig::DB_NAME, RBEConfig::DB_HOST, RBEConfig::DB_USER, RBEConfig::DB_PASS);
+rbeinit();
+
 getRoute()->get('/', 'home');
 getRoute()->get('/vote/', array('VoteController','vote'));
 getRoute()->get('/vote/start', array('VoteController','start'));
+getRoute()->get('/vote/done', array('VoteController','done'));
 getRoute()->get('/vote/save/(\d+)', array('VoteController','save'));
 getRoute()->get('.*', 'error404');
 getRoute()->run();
@@ -54,7 +58,6 @@ function error404() {
 }
 
 function top($title = '') {
-  rbeinit();
   ?>
   <html>
   <head>
