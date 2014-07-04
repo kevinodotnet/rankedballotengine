@@ -45,12 +45,13 @@ class VoteController {
     foreach ($election['rounds'] as $r) {
       $round++;
       ?>
-      <tr><td colspan="4"><h3><?php print VoteController::toOrdinal($round); ?> Round of Voting</h3></td></tr>
+      <tr><td colspan="4"><h3><?php print VoteController::toOrdinal($round); ?> Round</h3></td></tr>
       <tr>
       <th>Rank</th>
       <th>Percent</th>
       <th>Name</th>
       <th>Total Votes</th>
+      <th>Status</th>
       </tr>
       <?php
       $rank = 1;
@@ -72,6 +73,24 @@ class VoteController {
         <td><?php print $percForm; ?></td>
         <td><?php print $detail['name']; ?></td>
         <td><?php print $c['votes']; ?></td>
+        <td>
+          <?php
+	        if ($c['winner'] == 1) {
+            ?>
+            WINNER!
+            <?php
+	        }
+	        else if ($c['eliminated'] == 1) {
+            ?>
+            Eliminated
+            <?php
+          } else {
+            ?>
+            Hanging on
+            <?php
+          }
+          ?>
+        </td>
         </tr>
         <?php
         #print "$ranked: {$detail['name']}<br/>";
