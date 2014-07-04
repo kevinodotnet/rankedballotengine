@@ -2,6 +2,113 @@
 
 class VoteController {
 
+  public static function ballot ($electorid) {
+
+    top("Viewing vote #$electorid");
+    $votes = getDatabase()->all("
+      select
+        v.electionid,
+        v.rank,
+        c.id candidateid,
+        c.name,
+        c.img
+      from 
+        elector e
+        join vote v on v.electorid = e.id
+        join candidate c on c.id = v.candidateid
+      where
+        e.id = $electorid
+      order by
+        v.rank
+    ");
+
+    $electionid = '';
+
+    foreach ($votes as $v) {
+      $electionid = $v['electionid']; 
+      break;
+      $rank = VoteController::toOrdinal($v['rank']);
+      ?>
+      Rank <?php print $rank; ?>
+      Name: <?php print $v['name']; ?>
+      <br/>
+      <?php
+    }
+
+    ?>
+    <table class="table table-condensed table-hover">
+    <?php
+
+    $election = ElectionController::getResults($electionid);
+    $eliminated = array();
+    $round = 0;
+    foreach ($election['rounds'] as $r) {
+      $round++;
+      ?>
+      <tr><td colspan="4"><h3><?php print VoteController::toOrdinal($round); ?> Round of Voting</h3></td></tr>
+      <tr>
+      <th>Rank</th>
+      <th>Percent</th>
+      <th>Name</th>
+      <th>Total Votes</th>
+      </tr>
+      <?php
+      $rank = 1;
+      foreach ($r['candidates'] as $c) {
+        $ranked = VoteController::toOrdinal($rank++);
+        $percForm = sprintf("%.1f%%", $c['perc'] * 100);
+        $detail = $election['candidates'][$c['candidateid']];
+        $trClass = '';
+        if ($c['winner'] == 1) {
+          $trClass = 'success';
+        }
+        if ($c['eliminated'] == 1) {
+          $trClass = 'danger';
+          $eliminated[] = $c['candidateid'];
+        }
+        ?>
+        <tr class="<?php print $trClass; ?>" >
+        <td><?php print $ranked; ?></td>
+        <td><?php print $percForm; ?></td>
+        <td><?php print $detail['name']; ?></td>
+        <td><?php print $c['votes']; ?></td>
+        </tr>
+        <?php
+        #print "$ranked: {$detail['name']}<br/>";
+        #pr($c);
+        #pr($detail);
+
+      }
+      ?>
+      <tr>
+        <td>Your Ballot:</td>
+        <td colspan="3">
+        <?php
+          foreach ($votes as $v) {
+            $rank = VoteController::toOrdinal($v['rank']);
+            foreach ($eliminated as $id) {
+              if ($v['candidateid'] == $id) {
+                $v['eliminated'] = 1;
+              }
+            }
+            $spanStyle = '';
+            if ($v['eliminated'] == 1) {
+              $spanStyle = 'text-decoration:line-through';
+            }
+            print "<span style=\"$spanStyle\"><b>$rank</b> {$v['name']}</span><br/>";
+          }
+        ?>
+        </td>
+      </tr>
+      <?php
+    }
+    ?>
+    </table>
+    <?php
+
+    bottom();
+  }
+
   public static function toOrdinal ($number) {
     $m = array();
     $i = 0;
@@ -54,12 +161,15 @@ class VoteController {
   public static function done() {
 
     $votes = @getSession()->get('votes');
-    top('You have voted!');
-    pr($votes);
-    ?>
-    <a href="start" class="btn btn-danger">Cancel and start over</a>
-    <?php
-    bottom();
+
+    $electionid = 1; // TODO: hard coded.
+    $electorid = getDatabase()->execute(" insert into elector (created) values (CURRENT_TIMESTAMP) ");
+
+    foreach ($votes as $rank => $candidateid) {
+      getDatabase()->execute(" insert into vote (electionid,electorid,rank,candidateid) values ($electionid,$electorid,$rank,$candidateid) ");
+    }
+
+    header("Location: ".RBEConfig::WWW."/vote/ballot/$electorid");
   }
 
   public static function vote() {

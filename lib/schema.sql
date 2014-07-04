@@ -34,7 +34,7 @@ create table candidate (
 
 create table elector (
   id mediumint not null auto_increment,
-  cookie varchar(64) not null,
+  created datetime default CURRENT_TIMESTAMP,
   primary key (id)
 ) engine = innodb;
 
