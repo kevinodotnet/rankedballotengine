@@ -1,5 +1,21 @@
 <?php
 
+/* 
+
+Feedback TODO:
+
+- There was feedback that every Round of Voting should have a narrative of what just happened.  For example, after first round -  “Your fourth choice, Benny, was eliminated from the race because he has the least amount of voted, but your first choice, Omar, is still in the race.”
+or “Your first choice, Bev, got eliminated this round because she has the fewest votes.  However, your vote will be transferred to your next preferred candidate in the race, Will.
+
+
+-  Is it possible to highlight the voters current active choice in each round?  And to add to that, maybe bold the candidate(s) who get struck off each round?
+
+- If there is a tie at the end, both candidates are eliminated.  Not quite sure what to do there…maybe at least say tie?  Hopefully it won’t be an issue later down the road when there are a lot more votes.
+
+We had talked about this, but we need to point people to share ie. “Did you like that?”  Click here to share on FB, Twitter, etc.
+
+*/
+
 error_reporting(E_ERROR | E_PARSE);
 
 session_start();
