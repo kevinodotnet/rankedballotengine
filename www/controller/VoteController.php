@@ -196,7 +196,13 @@ class VoteController {
 
     $votes = @getSession()->get('votes');
     $step = VoteController::getStep();
-    $candidates = ElectionController::getCandidates();
+
+    $candidates = @getSession()->get('candidates');
+    if ($candidates == null) {
+      $candidates = ElectionController::getCandidates();
+      @getSession()->set('candidates',$candidates);
+    }
+
     $candidates_voted = array();
     $candidates_todo = array();
     foreach ($candidates as $c) {
@@ -215,15 +221,15 @@ class VoteController {
     }
 
     ?>
+
     <div class="row">
-    <div class="col-sm-9">
+    <div class="col-xs-12">
     <?php
 
     $backgrounds = array();
     $backgrounds[] = 'rgba(00,155,160,0.5)';
     $backgrounds[] = 'rgba(245,133,34,0.5)';
     $backgrounds[] = 'rgba(217,18,133,0.5)';
-
 
     $count = -1;
     foreach ($candidates_todo as $c) {
@@ -233,14 +239,10 @@ class VoteController {
       $bg = $backgrounds[ $count % count($backgrounds)  ];
       ?>
       <div class="row" style="background: <?php print $bg; ?>;">
-      <div class="center col-sm-3 col-xs-12" style="padding: 20px; ">
-      <a href="<?php print $voteUrl; ?>"><center><img src="<?php print $c['img']; ?>" class="center img-responsive" style=" align: left;"/></center></a>
+      <div class="center col-xs-6" style="padding: 20px; ">
+      <a href="<?php print $voteUrl; ?>"><center><img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="center img-responsive" style=" align: left;"/></center></a>
       </div>
-      <div class="center col-sm-9 col-xs-12" style="font-size: 150%; padding-top: 20px;">
-      <p><b>Name:</b> <?php print $c['name']; ?>
-      <b>Sex:</b> <?php print $c['sex']; ?>
-      <b>Age:</b> <?php print $c['age']; ?>
-      </p>
+      <div class="center col-xs-6" style="font-size: 150%; padding-top: 20px;">
       <p>
       <?php print $c['description']; ?>
       </p>
@@ -254,7 +256,10 @@ class VoteController {
 
     ?>
     </div>
-    <div class="col-sm-3">
+    </div>
+
+    <div class="row">
+    <div class="col-xs-12">
 
     <?php
     $showSaveBallot = 0;
@@ -274,7 +279,6 @@ class VoteController {
 	    <a href="start" class="btn btn-danger">Cancel and start over</a>
 	    </div>
 	    </div>
-
 
     <?php 
     $showSaveBallot = 0;
@@ -300,7 +304,7 @@ class VoteController {
 	      print "<b>$ordinal:</b> ".$c['name']."<br/>";
         ?>
         </div>
-        <div class="col-xs-6"><img src="<?php print $c['img']; ?>" class="img-responsive"/></div>
+        <div class="col-xs-6"><img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="img-responsive"/></div>
         </div>
         <?php
 	    }
