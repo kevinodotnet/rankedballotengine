@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL | E_ERROR | E_PARSE);
+error_reporting(E_ERROR | E_PARSE);
 
 session_start();
 date_default_timezone_set("Canada/Eastern");
