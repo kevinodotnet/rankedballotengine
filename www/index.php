@@ -24,6 +24,7 @@ getRoute()->get('/vote/start', array('VoteController','start'));
 getRoute()->get('/vote/done', array('VoteController','done'));
 getRoute()->get('/vote/ballot/(\d+)', array('VoteController','ballot'));
 getRoute()->get('/vote/save/(\d+)', array('VoteController','save'));
+getRoute()->get('/election/(\d+)/results', array('ElectionController','showResults'));
 getRoute()->get('.*', 'error404');
 getRoute()->run();
 
@@ -41,7 +42,7 @@ function home() {
   </div>
   <div class="center col-sm-4">
   <h2>Election Results</h2>
-  See the results.
+  <a href="<?php print RBEConfig::WWW; ?>/election/1/results">See the results!</a>
   </div>
   <div class="center col-sm-4">
   <h2>Learn More</h2>

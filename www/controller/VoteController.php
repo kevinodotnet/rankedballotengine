@@ -4,13 +4,15 @@ class VoteController {
 
   public static function ballot ($electorid) {
 
-    top("Viewing vote #$electorid");
+    top("Viewing ballot #$electorid");
 		?>
+    <!--
 		<p>
 		<center>
     <a href="<?php print RBEConfig::WWW; ?>/vote/start" class="btn btn-primary">Vote again!</a>
 		</center>
 		</p>
+    -->
 		<?php
     $votes = getDatabase()->all("
       select
@@ -28,102 +30,68 @@ class VoteController {
       order by
         v.rank
     ");
-
     $electionid = '';
-
     foreach ($votes as $v) {
       $electionid = $v['electionid']; 
       break;
     }
+    $election = ElectionController::getResults($electionid);
+
+    $backgrounds = array();
+    $backgrounds[] = 'rgba(00,155,160,0.5)';
+    $backgrounds[] = 'rgba(245,133,34,0.5)';
+    $backgrounds[] = 'rgba(217,18,133,0.5)';
 
     ?>
-    <table class="table table-condensed table-hover">
+    <div class="row">
     <?php
+    $count = -1;
+    foreach ($votes as $v) {
+      $count++;
+      $bg = $backgrounds[ $count % count($backgrounds)  ];
 
-    $election = ElectionController::getResults($electionid);
-    $eliminated = array();
-    $round = 0;
-    foreach ($election['rounds'] as $r) {
-      $round++;
+      $rank = $v['rank'];
+      $ord = VoteController::toOrdinal($rank);
+      $candidate = $election['candidates'][$v['candidateid']];
+      $winner = $candidate['winner'];
+      $eliminated = $candidate['eliminated'];
+      $elimOrd = VoteController::toOrdinal(($eliminated+1));
       ?>
-      <tr><td colspan="4"><h3><?php print VoteController::toOrdinal($round); ?> Round</h3></td></tr>
-      <tr>
-      <th>Rank</th>
-      <th>Percent</th>
-      <th>Name</th>
-      <th>Total Votes</th>
-      <th>Status</th>
-      </tr>
+      <div class="col-xs-6" style="background: <?php print $bg; ?>; padding-top: 5px; padding-bottom: 5px; font-size: 150%;">
       <?php
-      $rank = 1;
-      foreach ($r['candidates'] as $c) {
-        $ranked = VoteController::toOrdinal($rank++);
-        $percForm = sprintf("%.1f%%", $c['perc'] * 100);
-        $detail = $election['candidates'][$c['candidateid']];
-        $trClass = '';
-        if ($c['winner'] == 1) {
-          $trClass = 'success';
-        }
-        if ($c['eliminated'] == 1) {
-          $trClass = 'danger';
-          $eliminated[] = $c['candidateid'];
-        }
+      ?>
+      <img src="<?php print RBEConfig::WWW; ?>/<?php print $candidate['img']; ?>" style="float: left; padding-right: 5px;"/>
+      <?php
+      #pr($v);
+      #pr($candidate);
+      print "{$candidate['name']}, your $ord choice, ";
+      if ($winner) {
         ?>
-        <tr class="<?php print $trClass; ?>" >
-        <td><?php print $ranked; ?></td>
-        <td><?php print $percForm; ?></td>
-        <td><?php print $detail['name']; ?></td>
-        <td><?php print $c['votes']; ?></td>
-        <td>
-          <?php
-	        if ($c['winner'] == 1) {
-            ?>
-            WINNER!
-            <?php
-	        }
-	        else if ($c['eliminated'] == 1) {
-            ?>
-            Eliminated
-            <?php
-          } else {
-            ?>
-            Hanging on
-            <?php
-          }
-          ?>
-        </td>
-        </tr>
+        <b>won</b>!
         <?php
-        #print "$ranked: {$detail['name']}<br/>";
-        #pr($c);
-        #pr($detail);
-
+      } else {
+        ?>
+        was <b>eliminated</b> on the <?php print $elimOrd; ?> round of instant-runoff voting.
+        <?php
       }
       ?>
-      <tr>
-        <td>Your Ballot:</td>
-        <td colspan="3">
-        <?php
-          foreach ($votes as $v) {
-            $rank = VoteController::toOrdinal($v['rank']);
-            foreach ($eliminated as $id) {
-              if ($v['candidateid'] == $id) {
-                $v['eliminated'] = 1;
-              }
-            }
-            $spanStyle = '';
-            if ($v['eliminated'] == 1) {
-              $spanStyle = 'text-decoration:line-through';
-            }
-            print "<span style=\"$spanStyle\"><b>$rank</b> {$v['name']}</span><br/>";
-          }
-        ?>
-        </td>
-      </tr>
+      </div>
       <?php
+      if ($winner) {
+        break; 
+      }
     }
+
     ?>
-    </table>
+    </div>
+    <?php
+
+    ?>
+    <div style="padding-top: 20px;">
+    <center>
+    Now check out the <a class="" href="<?php print RBEConfig::WWW; ?>/election/<?php print $electionid; ?>/results">Detailed Election Results</a>.
+    </center>
+    </div>
     <?php
 
     bottom();
@@ -220,10 +188,23 @@ class VoteController {
       top("Who is your " . VoteController::toOrdinal($step) . " pick?");
     }
 
+    if ($step > 1) {
+      ?>
+      <div style="padding-bottom: 20px;">
+      <center>
+      <i>
+      (You don't have to keep picking. If you don't want to make a 
+      <?php print VoteController::toOrdinal($step); ?> pick then
+      <a href="done" class="">click here to submit your ballot as-is</a>.
+      </i>
+      </center>
+      </div>
+      <?php
+    }
+
     ?>
 
     <div class="row">
-    <div class="col-xs-12">
     <?php
 
     $backgrounds = array();
@@ -238,8 +219,28 @@ class VoteController {
       $rank = array_search($c['id'],$votes);
       $bg = $backgrounds[ $count % count($backgrounds)  ];
       ?>
+
+      <div class="col-sm-6 ">
+      <div style="padding-bottom: 10px; padding-top: 10px; background: <?php print $bg; ?>;">
+        <p>
+        <a href="<?php print $voteUrl; ?>"><img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="" style="float: left; padding-left: 5px; padding-right: 5px;"/></a>
+        <b><?php print $c['name']; ?></b> <?php print $c['description']; ?>
+        <br/><br/>
+        <center>
+        <span style="font-size: 250%;">
+        <a href="<?php print $voteUrl; ?>">Pick <b><?php print $c['name']; ?></b> <?php print VoteController::toOrdinal($step); ?>!</a>
+        </span>
+        </center>
+        </p>
+        <div style="clear: both;"> </div>
+      </div>
+      </div><!-- /candidateOUTER -->
+
+      <!--
+      <div class="col-sm-4">
+      <div class="col-sm-4">
       <div class="row" style="background: <?php print $bg; ?>;">
-      <div class="center col-xs-6" style="padding: 20px; ">
+      <div class="center col-xs-6" style="padding: 20px; background: <?php print $bg; ?>;">
       <a href="<?php print $voteUrl; ?>"><center><img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="center img-responsive" style=" align: left;"/></center></a>
       </div>
       <div class="center col-xs-6" style="font-size: 150%; padding-top: 20px;">
@@ -250,12 +251,13 @@ class VoteController {
       <span style="font-size: 150%;"><a href="<?php print $voteUrl; ?>">Pick <b><?php print $c['name']; ?></b> <?php print VoteController::toOrdinal($step); ?>!</a></span>
       </p>
       </div>
-      </div><!-- /candidate -->
+      </div>
+      </div>
+      -->
       <?php
     }
 
     ?>
-    </div>
     </div>
 
     <div class="row">
@@ -272,7 +274,7 @@ class VoteController {
 	    <div class="col-sm-12 center">
 	    <?php if ($showSaveBallot) {
 	      ?>
-	      <a href="done" class="btn btn-primary">Save Ballot As-Is</a>
+	      <a href="done" class="btn btn-primary">Submit Ballot As-Is</a>
 	      <?php
 	    }
 	    ?>
@@ -287,7 +289,7 @@ class VoteController {
       ?>
 
 	    <div style="margin-top: 20px;">
-	    <h2 class="center">Your ballot:</h2>
+	    <h2 class="center">Your ballot so far:</h2>
 	    <?php
 	    // show existing ballot ranking
 	    foreach ($votes as $rank => $id) {
@@ -298,13 +300,11 @@ class VoteController {
 	      }
 	      $ordinal = VoteController::toOrdinal($rank);
         ?>
-        <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-3">
         <?php
 	      print "<b>$ordinal:</b> ".$c['name']."<br/>";
         ?>
-        </div>
-        <div class="col-xs-6"><img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="img-responsive"/></div>
+        <img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="img-responsive"/>
         </div>
         <?php
 	    }
