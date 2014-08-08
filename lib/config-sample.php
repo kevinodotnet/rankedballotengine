@@ -7,6 +7,7 @@ class RBEConfig {
   const DB_HOST = "localhost";
   const DB_USER = "ottwatch";
   const DB_PASS = "CHANGEME";
+	const WWW = 'http://rankedballotengine.ca';
 
 }
 
