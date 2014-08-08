@@ -37,6 +37,7 @@ rbeinit();
 getRoute()->get('/', 'home');
 getRoute()->get('/vote/', array('VoteController','vote'));
 getRoute()->get('/vote/start', array('VoteController','start'));
+getRoute()->get('/vote/start/(\d+)', array('VoteController','start'));
 getRoute()->get('/vote/done', array('VoteController','done'));
 getRoute()->get('/vote/ballot/(\d+)', array('VoteController','ballot'));
 getRoute()->get('/vote/save/(\d+)', array('VoteController','save'));
@@ -50,23 +51,27 @@ function rbeinit() {
 
 function home() {
   top('Ranked Ballot Engine');
+  bottom();
+}
+
+function footer($electionid) {
+	if ($electionid == '') { $electionid = 1; }
   ?>
-  <div class="row">
+  <div class="row" style="margin-top: 20px; background: #f0f0f0; padding-bottom: 10px;">
   <div class="center col-sm-4">
   <h2>Vote Now!</h2>
-  <a href="<?php print RBEConfig::WWW; ?>/vote/">Vote now!</a>
+  <a href="<?php print RBEConfig::WWW; ?>/vote/start/<?php print $electionid; ?>">Vote now!</a>
   </div>
   <div class="center col-sm-4">
   <h2>Election Results</h2>
-  <a href="<?php print RBEConfig::WWW; ?>/election/1/results">See the results!</a>
+  <a href="<?php print RBEConfig::WWW; ?>/election/<?php print $electionid; ?>/results">See the results!</a>
   </div>
   <div class="center col-sm-4">
-  <h2>Learn More</h2>
-  <a href="http://ottawa123.ca">Learn more at ottawa123.ca</a>
+  <h2>About Ottawa123</h2>
+  <a href="http://ottawa123.ca">Learn more about Ranked Choice Voting</a>
   </div>
   </div>
   <?php
-  bottom();
 }
 
 function error404() {
@@ -83,18 +88,45 @@ function top($title = '') {
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
   <link rel="stylesheet" href="<?php print RBEConfig::WWW; ?>/style.css"/>
+	<!--
+  <link rel="stylesheet" href="http://ottawa123.ca/sites/all/themes/ottawa123/css/style.css?n9zmn8"/>
+	-->
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   </head>
   <body>
-  <div class="center jumbotron"><?php print $title; ?></div>
-  <div id="content">
+	<?php fbRoot(); ?>
+
+	<!--
+	-->
+
   <?php
+	if ($title != '') {
+	?>
+  <div class="center jumbotron row">
+	<div class="col-xs-2">
+	&nbsp;
+	</div>
+	<div class="col-xs-8">
+	<?php print $title; ?>
+	</div>
+	<div class="col-xs-2">
+	<a href="http://ottawa123.ca"><img src="http://ottawa123.ca/sites/all/themes/ottawa123/images/ottawa123_logo.jpg" class="img-responsive" alt="Ottawa 123"></a>
+	<span style="font-size: 50%;">powered by <a href="http://ottawa123.ca">ottawa123.ca</a>
+	</div>
+	</div>
+	<?
+	}
+	?>
+  <div id="content">
+	<?
 }
 
-function bottom() {
+function bottom($electionid) {
+	footer($electionid);
   ?>
   </div><!-- #content -->
+	<?php googleAnalytics(); ?>
   </body>
   </html>
   <?php
@@ -104,5 +136,38 @@ function pr($o) {
   print "<pre>";
   print print_r($o);
   print "</pre>";
+}
+
+function googleAnalytics() {
+	?>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-6324294-29', 'auto');
+  ga('send', 'pageview');
+</script>
+	<?php
+}
+
+function fbLike($relative) {
+	return;
+	?>
+	<div class="fb-like" data-href="http://vote.ottawa123.ca/vote/ballot/10" data-layout="button_count" data-action="like" data-show-faces="true" data-share="false"></div>
+	<?php
+}
+
+function fbRoot() {
+	?>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=743342905682343&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+	<?php
 }
 

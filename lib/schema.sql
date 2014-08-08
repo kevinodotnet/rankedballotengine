@@ -59,12 +59,12 @@ Initialization script for Ottawa123 test election.
 
 insert into election (id) values (1);
 
-insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Benny', 31, 'Coin and stamp collecting. Started a petition to ban winter. Favourite Food: Honey.', 'http://ottawa123.ca/sites/all/themes/ottawa123/images/candidates/bear.jpg' );
-insert into candidate (electionid,sex,name,age,description,img) values (1,'female','Bev', 41, 'Building houses. Doesn''t like the dentist. Favourite Food: Beavertails.','http://ottawa123.ca/sites/all/themes/ottawa123/images/candidates/beaver.jpg' );
-insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Charles', 27, 'Enjoys cycling. Favourite show is House of Cards. Favourite Food: Peanuts, sometimes almonds.','http://ottawa123.ca/sites/all/themes/ottawa123/images/candidates/chipmunk.jpg' );
-insert into candidate (electionid,sex,name,age,description,img) values (1,'female','Marie-Eve', 60, 'Loves walking everywhere. Speaks French with an English accent, speaks English with a French accent. Favourite Food: chocolate.','http://ottawa123.ca/sites/all/themes/ottawa123/images/candidates/moose.jpg' );
-insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Omar', 33, 'Drinking coffee. Doesn’t sleep very much. Favourite food: Bridgehead coffee.','http://ottawa123.ca/sites/all/themes/ottawa123/images/candidates/owl.jpg' );
-insert into candidate (electionid,sex,name,age,description,img) values (1,'female','Peggy', 39, 'Going to Le Nordik to be pampered. Is mostly a vegetarian. Favourite Food: leftovers.','http://ottawa123.ca/sites/all/themes/ottawa123/images/candidates/pig.jpg' );
-insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Will', 29, 'Plays the guitar. Volunteers at Bluesfest every year. Favourite Food: Anything with meat.','http://ottawa123.ca/sites/all/themes/ottawa123/images/candidates/wolf.jpg' );
+insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Benny', 31, 'Coin and stamp collecting. Started a petition to ban winter. Favourite Food: Honey.', 'http://vote.ottawa123.ca/img/bear_200.jpg');
+insert into candidate (electionid,sex,name,age,description,img) values (1,'female','Bev', 41, 'Building houses. Doesn''t like the dentist. Favourite Food: Beavertails.','http://vote.ottawa123.ca/img/beaver_200.jpg' );
+insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Charles', 27, 'Enjoys cycling. Favourite show is House of Cards. Favourite Food: Peanuts, sometimes almonds.','http://vote.ottawa123.ca/img/squirrel_200.jpg' );
+insert into candidate (electionid,sex,name,age,description,img) values (1,'female','Marie-Eve', 60, 'Loves walking everywhere. Speaks French with an English accent, speaks English with a French accent. Favourite Food: chocolate.','http://vote.ottawa123.ca/img/moose_200.jpg' );
+insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Omar', 33, 'Drinking coffee. Doesn’t sleep very much. Favourite food: Bridgehead coffee.','http://vote.ottawa123.ca/img/owl_200.jpg' );
+insert into candidate (electionid,sex,name,age,description,img) values (1,'female','Peggy', 39, 'Going to Le Nordik to be pampered. Is mostly a vegetarian. Favourite Food: leftovers.','http://vote.ottawa123.ca/img/pig_200.jpg' );
+insert into candidate (electionid,sex,name,age,description,img) values (1,'male','Will', 29, 'Plays the guitar. Volunteers at Bluesfest every year. Favourite Food: Anything with meat.','http://vote.ottawa123.ca/img/wolf_200.jpg' );
 
 

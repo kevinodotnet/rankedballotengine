@@ -2,9 +2,9 @@
 
 class ElectionController {
  
-  public static function getCandidates() {
+  public static function getCandidates($id) {
 
-    $rows = getDatabase()->all(" select * from candidate order by rand() ");
+    $rows = getDatabase()->all(" select * from candidate where electionid = $id order by rand() ");
     return $rows;
 
   }
@@ -12,6 +12,10 @@ class ElectionController {
   public static function getResults ($id) {
 
     $result = array();
+
+		# how many people voted?
+		$row = getDatabase()->one(" select count(distinct(electorid)) electors from vote where electionid = $id ");
+		$result['electors'] = $row['electors'];
 
     # prepare a 'candidate HASH array'
     $cand = array();
@@ -58,6 +62,7 @@ class ElectionController {
       }
 
       $winner = 0;
+			$notEliminatedCount = 0;
       foreach ($round as &$r) {
         $r['perc'] = $r['votes'] / $ballots;
         $r['winner'] = 0;
@@ -70,14 +75,21 @@ class ElectionController {
         $r['eliminated'] = 0;
         if ($r['winner'] == 0) {
 	        if ($r['votes'] == $min) {
+						# they are eliminated
 	          $r['eliminated'] = 1;
             $cand[$r['candidateid']]['eliminated'] = $roundNum;
 	          $eliminated[] = $r['candidateid'];
-	        }
+	        } else {
+						$notEliminatedCount++;
+					}
         }
       }
 
       $result['rounds'][$roundNum] = array('ballots'=>$ballots,'candidates'=>$round);
+
+			if ($notEliminatedCount == 0) {
+				break;
+			}
 
       if ($winner) {
         break;
@@ -93,12 +105,22 @@ class ElectionController {
   }
 
   public static function showResults ($electionid) {
+    top("Election Results");
+    ElectionController::showResultsInner($electionid);
+    bottom($electionid);
+	}
 
-    top("Election Results: $electionid");
+  public static function showResultsInner ($electionid) {
 
     $election = ElectionController::getResults($electionid);
 
-    ?>
+		?>
+		<center>
+		<h3>
+		After <?php print $election['electors']; ?> ballots and <?php print count($election['rounds']); ?> rounds of instant run-off counting:
+		</h3>
+		</center>
+
     <table class="table table-condensed table-hover">
     <?php
 
@@ -152,7 +174,7 @@ class ElectionController {
         <td><?php print $ranked; ?></td>
         <td><?php print $percForm; ?></td>
         <td>
-        <img src="<?php print RBEConfig::WWW; ?>/<?php print $detail['img']; ?>" style="width: 50px; height: 56px;"/>
+        <img src="<?php print $detail['img']; ?>" style="width: 50px; height: 56px;"/>
         <?php print $detail['name']; ?>
         </td>
         <td><?php print $c['votes']; ?></td>
@@ -188,7 +210,6 @@ class ElectionController {
     </table>
     <?php
 
-    bottom();
   }
 
 }

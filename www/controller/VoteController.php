@@ -4,15 +4,9 @@ class VoteController {
 
   public static function ballot ($electorid) {
 
-    top("Viewing ballot #$electorid");
+    top("Results for 'secret' ballot #$electorid");
 		?>
-    <!--
-		<p>
-		<center>
-    <a href="<?php print RBEConfig::WWW; ?>/vote/start" class="btn btn-primary">Vote again!</a>
-		</center>
-		</p>
-    -->
+
 		<?php
     $votes = getDatabase()->all("
       select
@@ -30,11 +24,22 @@ class VoteController {
       order by
         v.rank
     ");
+		if (count($votes) == 0) {
+			top();
+			?>
+			<center>
+			Sorry - we couldn't find the results for ballot #<?php print $electorid; ?>... Weird!
+			</center>
+			<?php
+			bottom();
+			return;
+		}
     $electionid = '';
     foreach ($votes as $v) {
       $electionid = $v['electionid']; 
       break;
     }
+
     $election = ElectionController::getResults($electionid);
 
     $backgrounds = array();
@@ -46,6 +51,8 @@ class VoteController {
     <div class="row">
     <?php
     $count = -1;
+		$winnerFound = 0;
+		if ($electionid == 2) { $extra = " width: 200px; height: 200px; "; }
     foreach ($votes as $v) {
       $count++;
       $bg = $backgrounds[ $count % count($backgrounds)  ];
@@ -60,41 +67,63 @@ class VoteController {
       <div class="col-xs-6" style="background: <?php print $bg; ?>; padding-top: 5px; padding-bottom: 5px; font-size: 150%;">
       <?php
       ?>
-      <img src="<?php print RBEConfig::WWW; ?>/<?php print $candidate['img']; ?>" style="float: left; padding-right: 5px;"/>
+      <img src="<?php print $candidate['img']; ?>" style="float: left; padding-right: 5px; <?php print $extra; ?>"/>
       <?php
       #pr($v);
       #pr($candidate);
       print "{$candidate['name']}, your $ord choice, ";
       if ($winner) {
+				$winnerFound = 1;
+				$winnerName = $candidate['name'];
         ?>
         <b>won</b>!
         <?php
       } else {
-        ?>
-        was <b>eliminated</b> on the <?php print $elimOrd; ?> round of instant-runoff voting.
-        <?php
+				if ($winnerFound == 1) {
+	        ?>
+	        was <b>eliminated</b> in the <?php print $elimOrd; ?> round. Who cares! <?php print $winnerName; ?> won!
+	        <?php
+				} else {
+	        ?>
+	        was <b>eliminated</b> in the <?php print $elimOrd; ?> round of instant-runoff voting.
+	        <?php
+				}
       }
       ?>
       </div>
       <?php
-      if ($winner) {
-        break; 
-      }
     }
 
     ?>
     </div>
-    <?php
 
-    ?>
-    <div style="padding-top: 20px;">
-    <center>
-    Now check out the <a class="" href="<?php print RBEConfig::WWW; ?>/election/<?php print $electionid; ?>/results">Detailed Election Results</a>.
-    </center>
-    </div>
-    <?php
+		<!--
+		<div class="row">
+		<div class="col-sm-6">
+			<center>
+			<h1>Share Your Ballot!</h1>
+			<?php fbLike("/vote/ballot/$electorid"); ?>
+			</center>
+		</div>
+		<div class="col-sm-6">
+			<center>
+			<h1>Invite Friends to Vote!</h1>
+			</center>
+		</div>
+		</div>
+		-->
 
-    bottom();
+	  <h1 class="center " style="margin-top: 20px;">Overall Ballot Results</h1>
+    <?php
+    ElectionController::showResultsInner($electionid);
+
+		?>
+	  <div class="center jumbotron" style="margin-top: 20px;">
+	    <a href="<?php print RBEConfig::WWW; ?>/vote/start/<?php print $electionid; ?>" class="btn btn-primary">Vote Again</a>
+		</div>
+		<?php
+
+    bottom($electionid);
   }
 
   public static function toOrdinal ($number) {
@@ -110,6 +139,16 @@ class VoteController {
     $m[++$i] = '8th';
     $m[++$i] = '9th';
     $m[++$i] = '10th';
+    $m[++$i] = '11th';
+    $m[++$i] = '12th';
+    $m[++$i] = '13th';
+    $m[++$i] = '14th';
+    $m[++$i] = '15th';
+    $m[++$i] = '16th';
+    $m[++$i] = '17th';
+    $m[++$i] = '18th';
+    $m[++$i] = '19th';
+    $m[++$i] = '20th';
     return $m[0+$number];
   }
 
@@ -129,7 +168,8 @@ class VoteController {
       $votes = array();
     } 
 
-    $candidates = ElectionController::getCandidates();
+    $electionid = getSession()->get('election');
+    $candidates = ElectionController::getCandidates($electionid);
     foreach ($candidates as $c) {
       if ($c['id'] == $id) {
         $votes[$step] = $id;
@@ -141,16 +181,21 @@ class VoteController {
     header("Location: ".RBEConfig::WWW."/vote/");
   }
 
-  public static function start() {
+  public static function start($election) {
+		if ($election == '') {
+			$election = 1;
+		}
     getSession()->set('votes',null);
-    header("Location: ".RBEConfig::WWW."/vote/");
+    getSession()->set('candidates',null);
+    getSession()->set('election',$election);
+		VoteController::vote();
   }
 
   public static function done() {
 
     $votes = @getSession()->get('votes');
 
-    $electionid = 1; // TODO: hard coded.
+    $electionid = getSession()->get('election');
     $electorid = getDatabase()->execute(" insert into elector (created) values (CURRENT_TIMESTAMP) ");
 
     foreach ($votes as $rank => $candidateid) {
@@ -162,12 +207,13 @@ class VoteController {
 
   public static function vote() {
 
+    $electionid = getSession()->get('election');
     $votes = @getSession()->get('votes');
     $step = VoteController::getStep();
 
     $candidates = @getSession()->get('candidates');
     if ($candidates == null) {
-      $candidates = ElectionController::getCandidates();
+      $candidates = ElectionController::getCandidates($electionid);
       @getSession()->set('candidates',$candidates);
     }
 
@@ -183,10 +229,26 @@ class VoteController {
     }
 
     if (count($candidates_todo) == 0) {
-      top("You've filled your ballot. Now click Save!");
+			# nobody left to vote for means "auto done"
+			header("Location: done");
+			return;
+      #top("You've filled your ballot. Now click Save!");
     } else {
       top("Who is your " . VoteController::toOrdinal($step) . " pick?");
     }
+
+		if ($electionid == 2) {
+		?>
+		<div class="row" style="margin-bottom: 20px; background: #ffc0c0; font-size: 120%; padding: 20px;">
+		<div class="col-sm-6 col-sm-offset-3">
+		<i>
+		Hi Ottawa Media! This is a "soft launch" so when we're meeting with you in person it's easier to explain what ranked-choice-voting is all about!<br/><br/>
+		So, who are your 1st, 2nd, 3rd, etc choices for Ottawa's next <a href="http://metronews.ca/voices/one-ten-laurier/695989/city-communications-nicknames-reporters-or-why-this-cat-was-grumpy/">'Grumpy Cat'</a>?
+		</i>
+		</div>
+		</div>
+		<?php
+		}
 
     if ($step > 1) {
       ?>
@@ -218,42 +280,24 @@ class VoteController {
       $voteUrl = RBEConfig::WWW . "/vote/save/" . $c['id'];
       $rank = array_search($c['id'],$votes);
       $bg = $backgrounds[ $count % count($backgrounds)  ];
+
+			if ($electionid == 2) { $extra = " width: 200px; height: 200px; "; }
       ?>
 
       <div class="col-sm-6 ">
-      <div style="padding-bottom: 10px; padding-top: 10px; background: <?php print $bg; ?>;">
+      <div style="padding: 10px; background: <?php print $bg; ?>; font-size: 120%;">
         <p>
-        <a href="<?php print $voteUrl; ?>"><img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="" style="float: left; padding-left: 5px; padding-right: 5px;"/></a>
-        <b><?php print $c['name']; ?></b> <?php print $c['description']; ?>
-        <br/><br/>
         <center>
-        <span style="font-size: 250%;">
+        <a href="<?php print $voteUrl; ?>"><img src="<?php print $c['img']; ?>" class="" style="float: left; padding-left: 5px; padding-right: 5px; <?php print $extra; ?>"/></a>
+        <b><?php print $c['name']; ?></b>:
+				<?php print $c['description']; ?><br/>
         <a href="<?php print $voteUrl; ?>">Pick <b><?php print $c['name']; ?></b> <?php print VoteController::toOrdinal($step); ?>!</a>
-        </span>
-        </center>
         </p>
+        </center>
         <div style="clear: both;"> </div>
       </div>
       </div><!-- /candidateOUTER -->
 
-      <!--
-      <div class="col-sm-4">
-      <div class="col-sm-4">
-      <div class="row" style="background: <?php print $bg; ?>;">
-      <div class="center col-xs-6" style="padding: 20px; background: <?php print $bg; ?>;">
-      <a href="<?php print $voteUrl; ?>"><center><img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="center img-responsive" style=" align: left;"/></center></a>
-      </div>
-      <div class="center col-xs-6" style="font-size: 150%; padding-top: 20px;">
-      <p>
-      <?php print $c['description']; ?>
-      </p>
-      <p>
-      <span style="font-size: 150%;"><a href="<?php print $voteUrl; ?>">Pick <b><?php print $c['name']; ?></b> <?php print VoteController::toOrdinal($step); ?>!</a></span>
-      </p>
-      </div>
-      </div>
-      </div>
-      -->
       <?php
     }
 
@@ -278,7 +322,7 @@ class VoteController {
 	      <?php
 	    }
 	    ?>
-	    <a href="start" class="btn btn-danger">Cancel and start over</a>
+	    <a href="<?php print RBEConfig::WWW; ?>/vote/start/<?php print $electionid; ?>" class="btn btn-danger">Cancel and start over</a>
 	    </div>
 	    </div>
 
@@ -304,7 +348,7 @@ class VoteController {
         <?php
 	      print "<b>$ordinal:</b> ".$c['name']."<br/>";
         ?>
-        <img src="<?php print RBEConfig::WWW; ?>/<?php print $c['img']; ?>" class="img-responsive"/>
+        <img src="<?php print $c['img']; ?>" class="img-responsive"/>
         </div>
         <?php
 	    }
@@ -319,7 +363,7 @@ class VoteController {
 
     <?php
 
-    bottom();
+    bottom($electionid);
   }
 
 
