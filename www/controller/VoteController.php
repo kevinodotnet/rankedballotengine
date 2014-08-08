@@ -361,6 +361,16 @@ class VoteController {
     </div>
     </div>
 
+		<?php
+		if ($electionid == 1) {
+		?>
+		<div style="text-align: right;">
+		Animal portraits by <a href="http://www.lydiapepin.com/">Lydia Pepin</a>.
+		</div>
+		<?php
+		}
+		?>
+
     <?php
 
     bottom($electionid);

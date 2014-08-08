@@ -111,8 +111,10 @@ function top($title = '') {
 	<?php print $title; ?>
 	</div>
 	<div class="col-xs-2">
-	<a href="http://ottawa123.ca"><img src="http://ottawa123.ca/sites/all/themes/ottawa123/images/ottawa123_logo.jpg" class="img-responsive" alt="Ottawa 123"></a>
+	<center>
+	<a href="http://ottawa123.ca"><img src="http://ottawa123.ca/sites/all/themes/ottawa123/images/ottawa123-300px.png" class="img-responsive" alt="Ottawa 123"></a>
 	<span style="font-size: 50%;">powered by <a href="http://ottawa123.ca">ottawa123.ca</a>
+	</center>
 	</div>
 	</div>
 	<?

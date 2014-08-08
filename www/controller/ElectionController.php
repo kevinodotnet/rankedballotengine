@@ -40,13 +40,14 @@ class ElectionController {
 
       $sql = "
         select
-          candidateid,count(1) votes
+          candidateid,c.name, count(1) votes
         from vote v
+					join candidate c on c.id = v.candidateid
           join ( select electorid, min(rank) rank from vote where electionid = $id and candidateid not in ($eliminatedCSV) group by electorid order by min(rank) ) v1 on 
             v1.electorid = v.electorid
             and v1.rank = v.rank
         group by
-          candidateid
+          v.candidateid
         order by count(1) desc
       ";
       # print "<hr>$sql<hr>";
@@ -91,14 +92,24 @@ class ElectionController {
 				break;
 			}
 
-      if ($winner) {
-        break;
-      }
       $roundNum++;
+
+      if ($winner) {
+				# we have a winner in this round, so mark every non-winner as eliminated in this round.
+	      foreach ($round as &$r) {
+					if ($r['winner'] == 0) {
+						$r['eliminated'] == 1;
+					}
+				}
+      }
       
     }
 
     $result['candidates'] = $cand;
+
+		if ($id == 2) {
+			#pr($result['candidates']);
+		}
 
     return $result;
 
