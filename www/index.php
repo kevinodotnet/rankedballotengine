@@ -84,7 +84,7 @@ function top($title = '') {
   ?>
   <html>
   <head>
-  <title><?php print $title; ?></title>
+  <title><?php print $title; ?> | Ottawa123.ca</title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
   <link rel="stylesheet" href="<?php print RBEConfig::WWW; ?>/style.css"/>
