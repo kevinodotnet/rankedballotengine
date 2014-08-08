@@ -250,12 +250,24 @@ class VoteController {
 		<?php
 		}
 
+    if ($step == 1) {
+			?>
+      <div style="padding-bottom: 20px;">
+      <center>
+      <i>
+			Pick your 1st candidate from the <?php print count($candidates_todo); ?> candidates listed below.
+      </i>
+      </center>
+      </div>
+			<?php
+		}
+
     if ($step > 1) {
       ?>
       <div style="padding-bottom: 20px;">
       <center>
       <i>
-      (You don't have to keep picking. If you don't want to make a 
+      If you don't want to make a 
       <?php print VoteController::toOrdinal($step); ?> pick then
       <a href="done" class="">click here to submit your ballot as-is</a>.
       </i>
