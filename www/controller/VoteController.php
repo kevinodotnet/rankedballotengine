@@ -47,7 +47,7 @@ class VoteController {
 		if ($showForm == 1) {
 			?>
 			<div class="row">
-			<div class="col-sm-6 col-sm-offset-3">
+			<div class="col-sm-6 col-sm-offset-3" style="font-size: 125%;">
 			<p>
 			Thank you for checking out our Ranked Choice Ballot simulator. Our goal
 			is to make a small, simple change that would make Ottawa's elections more fair, diverse and friendly.
@@ -62,8 +62,24 @@ class VoteController {
 			</div>
 			<button type="submit" class="btn btn-default">Sign up</button>
 			</form>
+
+			<p>
+			Give us a hand with a share and a tweet?<br/>
+
+			<?php
+			$u = RBEConfig::WWW.'/vote/start/'.$electionid.'?u=' .rand (1000,9999);
+			$fbHref = urlencode($u);
+			$twitterText = urlencode('Ranked Choice Voting is how I want to #ottvote '.$u);
+
+			?>
+			<a target="_blank" class="btn btn-success" href="http://www.facebook.com/sharer/sharer.php?u=<?php print $fbHref; ?>">Facebook</a>
+			<a target="_blank" class="btn btn-success" href="http://twitter.com/intent/tweet?text=<?php print $twitterText; ?>">Twitter</a>
+			</p>
+
 			</center>
+
 			</div>
+
 			</div>
 			<?php
 		} else {
@@ -100,8 +116,12 @@ class VoteController {
       $winner = $candidate['winner'];
       $eliminated = $candidate['eliminated'];
       $elimOrd = VoteController::toOrdinal(($eliminated+1));
+			$offset = '';
+			if ($count == (count($votes)-1)) {
+				$offset = 'col-xs-offset-3';
+			}
       ?>
-      <div class="col-xs-6" style="background: <?php print $bg; ?>; padding-top: 5px; padding-bottom: 5px; font-size: 150%;">
+      <div class="col-xs-6 <?php print $offset; ?>" style="background: <?php print $bg; ?>; padding-top: 5px; padding-bottom: 5px; font-size: 150%;">
       <?php
       ?>
       <img class="img-responsive" src="<?php print $candidate['img']; ?>" style="float: left; padding-right: 5px; <?php print $extra; ?>"/>
