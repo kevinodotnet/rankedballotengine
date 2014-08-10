@@ -67,7 +67,7 @@ class VoteController {
       <div class="col-xs-6" style="background: <?php print $bg; ?>; padding-top: 5px; padding-bottom: 5px; font-size: 150%;">
       <?php
       ?>
-      <img src="<?php print $candidate['img']; ?>" style="float: left; padding-right: 5px; <?php print $extra; ?>"/>
+      <img class="img-responsive" src="<?php print $candidate['img']; ?>" style="float: left; padding-right: 5px; <?php print $extra; ?>"/>
       <?php
       #pr($v);
       #pr($candidate);
@@ -255,7 +255,8 @@ class VoteController {
       <div style="padding-bottom: 20px;">
       <center>
       <i>
-			Pick your 1st candidate from the <?php print count($candidates_todo); ?> candidates listed below.
+			This is a <b>Ranked Choice Ballot</b> voting simulator. Confused? <a href="http://ottawa123.ca/content/what-ranked-choice-voting-initiative">Learn more here</a> or
+			just get started by picking your 1st candidate from the <?php print count($candidates_todo); ?> candidates listed below.
       </i>
       </center>
       </div>
@@ -376,7 +377,7 @@ class VoteController {
 		<?php
 		if ($electionid == 1) {
 		?>
-		<div style="text-align: right;">
+		<div style="text-align: center; margin-top: 10px;">
 		Animal portraits by <a href="http://www.lydiapepin.com/">Lydia Pepin</a>.
 		</div>
 		<?php
