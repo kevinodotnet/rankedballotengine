@@ -36,4 +36,8 @@ return array(
     'EpiSession_Memcached' => $vendorDir . '/jmathai/epiphany/src/EpiSession_Memcached.php',
     'EpiSession_Php' => $vendorDir . '/jmathai/epiphany/src/EpiSession_Php.php',
     'EpiTemplate' => $vendorDir . '/jmathai/epiphany/src/EpiTemplate.php',
+    'PHPMailer' => $vendorDir . '/phpmailer/phpmailer/class.phpmailer.php',
+    'POP3' => $vendorDir . '/phpmailer/phpmailer/class.pop3.php',
+    'SMTP' => $vendorDir . '/phpmailer/phpmailer/class.smtp.php',
+    'phpmailerException' => $vendorDir . '/phpmailer/phpmailer/class.phpmailer.php',
 );

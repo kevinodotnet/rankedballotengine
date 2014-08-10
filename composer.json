@@ -1,5 +1,6 @@
 {
   "require": {
-    "jmathai/epiphany": "dev-master"
+    "jmathai/epiphany": "dev-master",
+		"phpmailer/phpmailer": "5.2.*"
   }
 }
