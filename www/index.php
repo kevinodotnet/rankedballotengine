@@ -40,6 +40,7 @@ getRoute()->get('/vote/start', array('VoteController','start'));
 getRoute()->get('/vote/start/(\d+)', array('VoteController','start'));
 getRoute()->get('/vote/done', array('VoteController','done'));
 getRoute()->get('/vote/ballot/(\d+)', array('VoteController','ballot'));
+getRoute()->post('/vote/ballot/(\d+)', array('VoteController','ballot'));
 getRoute()->get('/vote/save/(\d+)', array('VoteController','save'));
 getRoute()->get('/election/(\d+)/results', array('ElectionController','showResults'));
 getRoute()->get('.*', 'error404');
@@ -172,5 +173,24 @@ function fbRoot() {
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 	<?php
+}
+
+function sendEmail($to,$subject,$body) {
+
+  $mail = new PHPMailer;
+  $mail->isSMTP();
+  $mail->Host = RBEConfig::SMTP_HOST;
+  $mail->Port = RBEConfig::SMTP_PORT;
+  $mail->From = RBEConfig::SMTP_FROM_EMAIL;
+  $mail->FromName = RBEConfig::SMTP_FROM_NAME;
+  $mail->addAddress($to);
+  $mail->Subject = $subject;
+  $mail->Body = $body;
+
+  if(!$mail->send()) {
+    return $mail->ErrorInfo;
+  }
+
+  return '';
 }
 

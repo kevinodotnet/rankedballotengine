@@ -4,10 +4,12 @@ class VoteController {
 
   public static function ballot ($electorid) {
 
-    top("Results for 'secret' ballot #$electorid");
-		?>
+		$showForm = 1;
+		if (isset($_POST['email'])) {
+			$showForm = 0;
+			$email = $_POST['email'];
+		}
 
-		<?php
     $votes = getDatabase()->all("
       select
         v.electionid,
@@ -39,6 +41,41 @@ class VoteController {
       $electionid = $v['electionid']; 
       break;
     }
+
+    top("Results for 'secret' ballot #$electorid");
+
+		if ($showForm == 1) {
+			?>
+			<div class="row">
+			<div class="col-sm-6 col-sm-offset-3">
+			<p>
+			Thank you for checking out our Ranked Choice Ballot simulator. Our goal
+			is to make a small, simple change that would make Ottawa's elections more fair, diverse and friendly.
+			Join our campaign by signing up to our newsletter!
+			</p>
+			<center>
+			<form class="form-inline" role="form" method="post"> 
+			<div class="form-group"> 
+			<label class="sr-only" for="exampleInputEmail2">Email address
+			</label> 
+			<input type="email" class="form-control" id="exampleInputEmail2" name="email" placeholder="Enter email"> 
+			</div>
+			<button type="submit" class="btn btn-default">Sign up</button>
+			</form>
+			</center>
+			</div>
+			</div>
+			<?php
+		} else {
+			?>
+			<div class="row">
+			<div class="col-sm-6 col-sm-offset-3">
+			Thanks for signing up!
+			</div>
+			</div>
+			<?php
+	    ElectionController::sendContactEmail($electionid, "Ballot signup from $email", "Ballot signup from $email\n\nhttp://ottawa123.ca/content/get-involved");
+		}
 
     $election = ElectionController::getResults($electionid);
 

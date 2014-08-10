@@ -1,6 +1,12 @@
 <?
 
 class ElectionController {
+
+	public static function sendContactEmail ($id, $subject, $body) {
+		$row = getDatabase()->one(" select contact from election where id = $id ");
+		$to = $row['contact'];
+		sendEmail($to,$subject,$body);
+	}
  
   public static function getCandidates($id) {
 
