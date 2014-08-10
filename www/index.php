@@ -105,17 +105,13 @@ function top($title = '') {
   <?php
 	if ($title != '') {
 	?>
-  <div class="center jumbotron row">
-	<div class="col-xs-2">
-	&nbsp;
-	</div>
-	<div class="col-xs-8">
-	<?php print $title; ?>
+  <div class="center row">
+	<div class="col-xs-8 col-xs-offset-2">
+	<h1><?php print $title; ?></h1>
 	</div>
 	<div class="col-xs-2">
 	<center>
-	<a href="http://ottawa123.ca"><img src="http://ottawa123.ca/sites/all/themes/ottawa123/images/ottawa123-300px.png" class="img-responsive" alt="Ottawa 123"></a>
-	<span style="font-size: 50%;">powered by <a href="http://ottawa123.ca">ottawa123.ca</a>
+	<a href="http://ottawa123.ca"><img src="http://ottawa123.ca/sites/all/themes/ottawa123/images/ottawa123-300px.png" class="img-responsive toplogo" alt="Ottawa 123"></a>
 	</center>
 	</div>
 	</div>
