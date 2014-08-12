@@ -69,7 +69,7 @@ class VoteController {
 			<?php
 			$u = RBEConfig::WWW.'/vote/start/'.$electionid.'?u=' .rand (1000,9999);
 			$fbHref = urlencode($u);
-			$twitterText = urlencode('Ranked Choice Voting is how I want to #ottvote '.$u);
+			$twitterText = urlencode('Ranked Choice Voting is how I want to #ottvote, via @Ottawa_123 '.$u);
 
 			?>
 			<a target="_blank" class="btn btn-success" href="http://www.facebook.com/sharer/sharer.php?u=<?php print $fbHref; ?>">Facebook</a>
@@ -117,7 +117,7 @@ class VoteController {
       $eliminated = $candidate['eliminated'];
       $elimOrd = VoteController::toOrdinal(($eliminated+1));
 			$offset = '';
-			if ($count == (count($votes)-1)) {
+			if (($count % 2 == 0) && ($count == (count($votes)-1))) {
 				$offset = 'col-xs-offset-3';
 			}
       ?>
