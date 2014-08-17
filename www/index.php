@@ -43,6 +43,7 @@ getRoute()->get('/vote/ballot/(\d+)', array('VoteController','ballot'));
 getRoute()->post('/vote/ballot/(\d+)', array('VoteController','ballot'));
 getRoute()->get('/vote/save/(\d+)', array('VoteController','save'));
 getRoute()->get('/election/(\d+)/results', array('ElectionController','showResults'));
+getRoute()->get('/election/(\d+)/results/since/(\d\d\d\d-\d\d-\d\d)', array('ElectionController','showResults'));
 getRoute()->get('.*', 'error404');
 getRoute()->run();
 

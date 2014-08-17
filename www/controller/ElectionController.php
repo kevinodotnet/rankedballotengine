@@ -128,9 +128,8 @@ class ElectionController {
 
   }
 
-  public static function showResults ($electionid)  {
+  public static function showResults ($electionid,$since)  {
     top("Election Results");
-		$since = $_GET['since'];
     ElectionController::showResultsInner($electionid,$since);
     bottom($electionid);
 	}
