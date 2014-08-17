@@ -15,12 +15,17 @@ class ElectionController {
 
   }
 
-  public static function getResults ($id) {
+  public static function getResults ($id,$since) {
+
+		$whereSince = '';
+		if (@$since != '') {
+			$whereSince = " and e.created >= '$since' ";
+		}
 
     $result = array();
 
 		# how many people voted?
-		$row = getDatabase()->one(" select count(distinct(electorid)) electors from vote where electionid = $id ");
+		$row = getDatabase()->one(" select count(distinct(electorid)) electors from vote v join elector e on e.id = v.electorid where electionid = $id $whereSince ");
 		$result['electors'] = $row['electors'];
 
     # prepare a 'candidate HASH array'
@@ -32,7 +37,7 @@ class ElectionController {
     }
 
     # number of votes cast per 'round' of voting
-    $rows = getDatabase()->all(" select rank,count(1) count from vote where electionid = $id group by rank order by rank ");
+    $rows = getDatabase()->all(" select v.rank,count(1) count from vote v join elector e on e.id = v.electorid where v.electionid = $id $whereSince group by v.rank order by v.rank ");
     $result['rankingSummary'] = $rows;
 
     # keep track of who has been eliminated as each round is processed
@@ -49,9 +54,11 @@ class ElectionController {
           candidateid,c.name, count(1) votes
         from vote v
 					join candidate c on c.id = v.candidateid
+					join elector e on e.id = v.electorid
           join ( select electorid, min(rank) rank from vote where electionid = $id and candidateid not in ($eliminatedCSV) group by electorid order by min(rank) ) v1 on 
             v1.electorid = v.electorid
             and v1.rank = v.rank
+				where 1 = 1 $whereSince 
         group by
           v.candidateid
         order by count(1) desc
@@ -121,15 +128,16 @@ class ElectionController {
 
   }
 
-  public static function showResults ($electionid) {
+  public static function showResults ($electionid)  {
     top("Election Results");
-    ElectionController::showResultsInner($electionid);
+		$since = $_GET['since'];
+    ElectionController::showResultsInner($electionid,$since);
     bottom($electionid);
 	}
 
-  public static function showResultsInner ($electionid) {
+  public static function showResultsInner ($electionid,$since) {
 
-    $election = ElectionController::getResults($electionid);
+    $election = ElectionController::getResults($electionid,$since);
 
 		?>
 		<center>
