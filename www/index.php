@@ -44,6 +44,12 @@ getRoute()->post('/vote/ballot/(\d+)', array('VoteController','ballot'));
 getRoute()->get('/vote/save/(\d+)', array('VoteController','save'));
 getRoute()->get('/election/(\d+)/results', array('ElectionController','showResults'));
 getRoute()->get('/election/(\d+)/results/since/(\d\d\d\d-\d\d-\d\d)', array('ElectionController','showResults'));
+
+# TODO: authentication for these
+getRoute()->get('/election/(\d+)/candidate/add', array('ElectionController','candidateAdd'));
+getRoute()->post('/election/(\d+)/candidate/add', array('ElectionController','candidateAdd'));
+
+# CATCH all and route
 getRoute()->get('.*', 'error404');
 getRoute()->run();
 
@@ -190,4 +196,47 @@ function sendEmail($to,$subject,$body) {
 
   return '';
 }
+
+function db_save($table, $values, $key) {
+	$count = getDatabase()->one(" select count(1) c from $table where $key = :key ",array('key'=>$values[$key]));
+	if ($count['c'] == 0) {
+		return db_insert($table,$values);
+	}
+	db_update($table,$values, $key);
+}
+
+function db_insert($table, $values) {
+	$sql = db_generate_insert($table, $values);
+	return getDatabase()->execute($sql, $values);
+}
+
+function db_update($table,$values,$key) {
+	if ($key == null) {
+		$key = 'id';
+	}
+  $sql = " update $table set ";
+  foreach ($values as $k => $v) {
+    #if ($k == $key) { continue; }
+    $sql .= " `$k` = :$k, ";
+  }
+  $sql = preg_replace('/, $/','',$sql);
+  $sql .= " where $key = :$key ";
+	getDatabase()->execute($sql,$values);
+}
+
+function db_generate_insert($table, $values) {
+  $sql = "insert into $table (";
+  foreach ( $values as $k => $v ) {
+    $sql .= "`{$k}`,";
+  }
+  $sql = rtrim($sql, ',');
+  $sql .= ") values (";
+  foreach ( $values as $k => $v ) {
+    $sql .= ":{$k},";
+  }
+  $sql = rtrim($sql, ',');
+  $sql .= ")";
+  return $sql;
+}
+
 

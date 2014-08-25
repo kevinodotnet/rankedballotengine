@@ -2,6 +2,71 @@
 
 class ElectionController {
 
+	public static function candidateAdd($electionid) {
+
+		$values['electionid'] = $electionid;
+		$values['name'] = $_POST['name'];
+		$values['description'] = $_POST['desc'];
+		$values['img'] = $_POST['img'];
+		$values['age'] = $_POST['age'];
+		$values['sex'] = $_POST['sex'];
+
+		top("Add Candidate");
+
+		if ($_POST['action'] == 'add') {
+			print "<h1>Saving...</h1>\n";
+			db_insert('candidate',$values);
+			print "<h1>Saved!</h1>\n";
+		}
+
+		?>
+		<form class="form-horizontal" method="post">
+		<input type="hidden" name="action" value="add"/>
+		<fieldset>
+		
+		<!-- Text input-->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="name">Candidate</label>  
+		  <div class="col-md-4">
+		  <input id="name" name="name" type="text" placeholder="Name" class="form-control input-md" required="">
+		    
+		  </div>
+		</div>
+		
+		<!-- Text input-->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="desc">Description</label>  
+		  <div class="col-md-4">
+		  <input id="desc" name="desc" type="text" placeholder="" class="form-control input-md">
+		    
+		  </div>
+		</div>
+		
+		<!-- Text input-->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="img">Image URL</label>  
+		  <div class="col-md-4">
+		  <input id="img" name="img" type="text" placeholder="http://example.com/existing/image/200px.jpg" class="form-control input-md">
+		    
+		  </div>
+		</div>
+
+		<div class="form-group">
+	  <div class="col-md-4 col-md-offset-4">
+    <button id="singlebutton" name="singlebutton" class="btn btn-primary">Add Candidate</button>
+	  </div>
+		</div>
+		
+		</fieldset>
+		</form>
+
+
+		<?php
+
+		bottom();
+		
+	}
+
 	public static function sendContactEmail ($id, $subject, $body) {
 		$row = getDatabase()->one(" select contact from election where id = $id ");
 		$to = $row['contact'];
@@ -237,3 +302,5 @@ class ElectionController {
   }
 
 }
+
+
