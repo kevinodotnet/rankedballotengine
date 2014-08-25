@@ -47,7 +47,7 @@ getRoute()->get('/election/(\d+)/results/since/(\d\d\d\d-\d\d-\d\d)', array('Ele
 
 # TODO: authentication for these
 getRoute()->get('/election/(\d+)/candidate/add', array('ElectionController','candidateAdd'));
-getRoute()->post('/election/(\d+)/candidate/add', array('ElectionController','candidateAdd'));
+# OFF UNTIL AUTH IS DONE getRoute()->post('/election/(\d+)/candidate/add', array('ElectionController','candidateAdd'));
 
 # CATCH all and route
 getRoute()->get('.*', 'error404');

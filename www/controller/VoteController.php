@@ -105,7 +105,8 @@ class VoteController {
     <?php
     $count = -1;
 		$winnerFound = 0;
-		if ($electionid == 2) { $extra = " width: 200px; height: 200px; "; }
+		if ($electionid >= 2) { $extra = " width: 200px; height: 200px; "; }
+		if ($electionid >= 2) { $extra = " max-width: 200px; max-height: 200px; "; }
     foreach ($votes as $v) {
       $count++;
       $bg = $backgrounds[ $count % count($backgrounds)  ];
@@ -358,7 +359,7 @@ class VoteController {
       <div style="padding: 10px; background: <?php print $bg; ?>; font-size: 120%;">
         <p>
         <center>
-        <a href="<?php print $voteUrl; ?>"><img src="<?php print $c['img']; ?>" class="" style="float: left; padding-left: 5px; padding-right: 5px; <?php print $extra; ?>"/></a>
+        <a href="<?php print $voteUrl; ?>"><img src="<?php print $c['img']; ?>" class="img-responsive" style="float: left; padding-left: 5px; padding-right: 5px; <?php print $extra; ?>"/></a>
         <b><?php print $c['name']; ?></b>:
 				<?php print $c['description']; ?><br/>
         <a href="<?php print $voteUrl; ?>">Pick <b><?php print $c['name']; ?></b> <?php print VoteController::toOrdinal($step); ?>!</a>
